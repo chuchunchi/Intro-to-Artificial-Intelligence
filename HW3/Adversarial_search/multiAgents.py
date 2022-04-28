@@ -130,7 +130,32 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         # Begin your code
-        util.raiseNotDefined()  
+        #util.raiseNotDefined() 
+        ind = 0
+        actions = gameState.getLegalActions(ind)
+        values = []
+        for action in actions:
+            nextstate = gameState.getNextState(ind, action)
+            values.append(self.minimax(nextstate,0,1))
+        maxvalue = max(values)
+        print(self.depth)
+        return actions[values.index(maxvalue)]
+          
+    def minimax(self, gameState, depth, ind):
+        actions = gameState.getLegalActions(ind)
+        values = []
+        if (depth==self.depth or len(actions)==0 or gameState.isWin() or gameState.isLose()):
+            return scoreEvaluationFunction(gameState)
+        if ind == gameState.getNumAgents()-1:
+            for action in actions:
+                nextstate = gameState.getNextState(ind, action)
+                values.append(self.minimax(nextstate,depth+1,0))
+            return max(values)
+        else:
+            for action in actions:
+                nextstate = gameState.getNextState(ind, action)
+                values.append(self.minimax(nextstate,depth,ind+1))
+            return min(values)
         # End your code
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
