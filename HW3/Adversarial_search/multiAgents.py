@@ -138,7 +138,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
             nextstate = gameState.getNextState(ind, action)
             values.append(self.minimax(nextstate,0,1))
         maxvalue = max(values)
-        print(self.depth)
         return actions[values.index(maxvalue)]
           
     def minimax(self, gameState, depth, ind):
@@ -146,15 +145,18 @@ class MinimaxAgent(MultiAgentSearchAgent):
         values = []
         if (depth==self.depth or len(actions)==0 or gameState.isWin() or gameState.isLose()):
             return scoreEvaluationFunction(gameState)
-        if ind == gameState.getNumAgents()-1:
+        if ind == 0:
             for action in actions:
                 nextstate = gameState.getNextState(ind, action)
-                values.append(self.minimax(nextstate,depth+1,0))
+                values.append(self.minimax(nextstate,depth,1))
             return max(values)
         else:
             for action in actions:
                 nextstate = gameState.getNextState(ind, action)
-                values.append(self.minimax(nextstate,depth,ind+1))
+                if ind == gameState.getNumAgents()-1:
+                    values.append(self.minimax(nextstate,depth+1,0))
+                else:
+                    values.append(self.minimax(nextstate,depth,ind+1))
             return min(values)
         # End your code
 
