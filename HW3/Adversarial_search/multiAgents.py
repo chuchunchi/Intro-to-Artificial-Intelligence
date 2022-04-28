@@ -15,6 +15,7 @@
 from util import manhattanDistance
 from game import Directions
 import random, util
+import statistics
 
 from game import Agent
 
@@ -174,7 +175,34 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         # Begin your code
-        util.raiseNotDefined()  
+        #util.raiseNotDefined()  
+        ind = 0
+        actions = gameState.getLegalActions(ind)
+        values = []
+        for action in actions:
+            nextstate = gameState.getNextState(ind, action)
+            values.append(self.expectimax(nextstate,0,1))
+        maxvalue = max(values)
+        return actions[values.index(maxvalue)]
+          
+    def expectimax(self, gameState, depth, ind):
+        actions = gameState.getLegalActions(ind)
+        values = []
+        if (depth==self.depth or len(actions)==0 or gameState.isWin() or gameState.isLose()):
+            return scoreEvaluationFunction(gameState)
+        if ind == 0:
+            for action in actions:
+                nextstate = gameState.getNextState(ind, action)
+                values.append(self.expectimax(nextstate,depth,1))
+            return max(values)
+        else:
+            for action in actions:
+                nextstate = gameState.getNextState(ind, action)
+                if ind == gameState.getNumAgents()-1:
+                    values.append(self.expectimax(nextstate,depth+1,0))
+                else:
+                    values.append(self.expectimax(nextstate,depth,ind+1))
+            return statistics.mean(values)
         # End your code
 
 def betterEvaluationFunction(currentGameState):
