@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Apr 30 22:03:09 2022
+Created on Sun May  1 13:54:52 2022
 
 @author: chuch
 """
 
 
-lis = [True,False,True,False,False]
-print(sum(lis))
+l = [1,2,5,5,5]
+print(max(l))
+print(l.index(max(l)))

@@ -15,7 +15,6 @@
 from util import manhattanDistance
 from game import Directions
 import random, util
-import statistics
 
 from game import Agent
 
@@ -135,29 +134,32 @@ class MinimaxAgent(MultiAgentSearchAgent):
         ind = 0
         actions = gameState.getLegalActions(ind)
         values = []
-        for action in actions:
-            nextstate = gameState.getNextState(ind, action)
-            values.append(self.minimax(nextstate,0,1))
-        maxvalue = max(values)
+        for action in actions: #for every possible action
+            nextstate = gameState.getNextState(ind, action) #compute nextstate of current action
+            values.append(self.minimax(nextstate,0,1)) #initial with depth=0 and index=1
+            #go to minimax function
+        maxvalue = max(values) #return max value for pacman (index=0)
         return actions[values.index(maxvalue)]
           
     def minimax(self, gameState, depth, ind):
         actions = gameState.getLegalActions(ind)
         values = []
         if (depth==self.depth or len(actions)==0 or gameState.isWin() or gameState.isLose()):
-            return scoreEvaluationFunction(gameState)
-        if ind == 0:
+            return scoreEvaluationFunction(gameState) #return the value if 1)arrive the last depth
+                                                                        # 2)no legal actions
+                                                                        # 3)game end (win/lose)
+        if ind == 0: # compute agent pacman => return max value
             for action in actions:
                 nextstate = gameState.getNextState(ind, action)
-                values.append(self.minimax(nextstate,depth,1))
+                values.append(self.minimax(nextstate,depth,1)) #next agent = first ghost (index=1)
             return max(values)
-        else:
+        else: # compute ghost agents => return min value
             for action in actions:
                 nextstate = gameState.getNextState(ind, action)
-                if ind == gameState.getNumAgents()-1:
-                    values.append(self.minimax(nextstate,depth+1,0))
-                else:
-                    values.append(self.minimax(nextstate,depth,ind+1))
+                if ind == gameState.getNumAgents()-1: #the last ghost agent
+                    values.append(self.minimax(nextstate,depth+1,0)) #compute pacman's next move
+                else: #other ghost agents
+                    values.append(self.minimax(nextstate,depth,ind+1)) #compute next ghost
             return min(values)
         # End your code
 
@@ -195,14 +197,17 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 nextstate = gameState.getNextState(ind, action)
                 values.append(self.expectimax(nextstate,depth,1))
             return max(values)
-        else:
+        else:# compute ghost agents => return avg value
             for action in actions:
                 nextstate = gameState.getNextState(ind, action)
-                if ind == gameState.getNumAgents()-1:
-                    values.append(self.expectimax(nextstate,depth+1,0))
-                else:
-                    values.append(self.expectimax(nextstate,depth,ind+1))
-            return statistics.mean(values)
+                if ind == gameState.getNumAgents()-1:#the last ghost agent
+                    values.append(self.expectimax(nextstate,depth+1,0))#compute pacman's next move
+                else: #other ghost agents
+                    values.append(self.expectimax(nextstate,depth,ind+1)) #compute next ghost
+            total=0.0
+            for value in values:
+                total+=value
+            return total/len(values)
         # End your code
 
 def betterEvaluationFunction(currentGameState):
