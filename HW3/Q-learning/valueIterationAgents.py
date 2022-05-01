@@ -74,7 +74,7 @@ class ValueIterationAgent(ValueEstimationAgent):
             vals = util.Counter() #dictionary zero
             for state in states:
                 if(self.mdp.isTerminal(state)):
-                    vals[state]=None
+                    vals[state]=0
                     continue
                 maxvalue = -float('inf')
                 actions = self.mdp.getPossibleActions(state)
