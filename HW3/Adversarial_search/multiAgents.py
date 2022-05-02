@@ -145,7 +145,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(ind)
         values = []
         if (depth==self.depth or len(actions)==0 or gameState.isWin() or gameState.isLose()):
-            return scoreEvaluationFunction(gameState) #return the value if 1)arrive the last depth
+            return self.evaluationFunction(gameState) #return the value if 1)arrive the last depth
                                                                         # 2)no legal actions
                                                                         # 3)game end (win/lose)
         if ind == 0: # compute agent pacman => return max value
@@ -191,7 +191,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions(ind)
         values = []
         if (depth==self.depth or len(actions)==0 or gameState.isWin() or gameState.isLose()):
-            return scoreEvaluationFunction(gameState)
+            return self.evaluationFunction(gameState)
         if ind == 0:
             for action in actions:
                 nextstate = gameState.getNextState(ind, action)
@@ -216,14 +216,45 @@ def betterEvaluationFunction(currentGameState):
     evaluation function (part1-3).
 
     DESCRIPTION: <write something here so we know what you did>
+    1) if this game win, I'll give a high score to reward.
+    2) if lose, I'll give a low score to avoid.
+    3) consider the distance to foods and ghosts, return corresponding score
     """
     "*** YOUR CODE HERE ***"
     # Begin your code
-    util.raiseNotDefined()
+    #util.raiseNotDefined()
+    score = currentGameState.getScore()
+    if(currentGameState.isWin()):
+        return 55555
+    elif(currentGameState.isLose()):
+        return -55555
+    else:
+        pacman = currentGameState.getPacmanPosition()
+        ghosts = currentGameState.getGhostPositions()
+    
+        foods = currentGameState.getFood().asList()
+        ghost_dist=[]
+        food_dist=[]
+        
+        for ghost in ghosts:
+            ghost_dist.append(util.manhattanDistance(pacman, ghost)) #distance with ghosts
+        for food in foods:
+            food_dist.append(util.manhattanDistance(pacman, food)) #distance with foods
+        closest_ghost = min(ghost_dist)
+        closest_food = min(food_dist)
+        if(closest_ghost<=2): #if the ghost is very close
+            if(len(currentGameState.getCapsules())>0): #but we still get capsules
+                score-=50 # a little penalty, wish it seek for the capsule
+            else: #ghost is close and no capsules left
+                score-=1000
+        if(len(foods)<=3 and closest_food<=2): #few last food
+            closest_food*=0.01 # rush to it
+        return score+10.0/closest_food
+    
     # End your code
 
 # Abbreviation
 """
 If you complete this part, please replace scoreEvaluationFunction with betterEvaluationFunction ! !
 """
-better = scoreEvaluationFunction # betterEvaluationFunction or scoreEvaluationFunction
+better = betterEvaluationFunction # betterEvaluationFunction or scoreEvaluationFunction

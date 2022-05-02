@@ -71,23 +71,19 @@ class ValueIterationAgent(ValueEstimationAgent):
         #util.raiseNotDefined() 
         states = self.mdp.getStates()
         for i in range(self.iterations):
-            vals = util.Counter() #dictionary zero
+            vals = util.Counter() #dictionary with all zeros #vals: temp dict
             for state in states:
-                if(self.mdp.isTerminal(state)):
+                if(self.mdp.isTerminal(state)): #no legal action
                     vals[state]=0
                     continue
                 maxvalue = -float('inf')
-                actions = self.mdp.getPossibleActions(state)
+                actions = self.mdp.getPossibleActions(state) #get actions of the state
                 for action in actions:
-                    total=0.0
-                    statesandprobs = self.mdp.getTransitionStatesAndProbs(state,action)
-                    for stateandprob in statesandprobs:
-                        nextstate = stateandprob[0]
-                        prob = stateandprob[1]
-                        total+=prob*(self.mdp.getReward(state,action,nextstate)+self.discount*self.values[nextstate])
+                    total = self.computeQValueFromValues(state,action) #get Q value!!
                     if(total>maxvalue):
-                        maxvalue = total
-                        vals[state]=maxvalue
+                        maxvalue = total #keep track of the max value
+                        vals[state]=maxvalue #put in the dict
+            #after go thru every state, put them in self.value.
             for state in states:
                 self.values[state]=vals[state]
         # End your code
@@ -109,10 +105,11 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Begin your code
         #util.raiseNotDefined()  
         total=0.0
-        statesandprobs = self.mdp.getTransitionStatesAndProbs(state,action)
+        statesandprobs = self.mdp.getTransitionStatesAndProbs(state,action) #get nextstates and probabilities
         for stateandprob in statesandprobs:
             nextstate = stateandprob[0]
             prob = stateandprob[1]
+            # the formula (written in report)
             total+=prob*(self.mdp.getReward(state,action,nextstate)+self.discount*self.values[nextstate])
         return total
         # End your code
